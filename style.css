@@ -50,7 +50,11 @@ height: 200px;
   }
   
 
-  #game-end img {
+  #game-end-win img {
+    width: 200px;
+    margin-bottom: 50px;
+  }
+  #game-end-lose img {
     width: 200px;
     margin-bottom: 50px;
   }

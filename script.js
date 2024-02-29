@@ -14,31 +14,42 @@ function switchPage(pageId) {
  })
 }
 
-const startGameBtn = document.getElementById("start-game-btn");
-startGameBtn.addEventListener('click', () => switchPage('game-screen'));
+var interval;
 
-const restartGameBtn = document.getElementById("restart-game-btn");
-function restartGame() {
+function startGame() {
+    clearInterval(interval)
+    cards.forEach(card => {
+        card.classList.remove("flip")
+    })
+    shuffleCards();
+    resetBoard();
     totalSeconds = 45;
-    const interval = setInterval(updateTimer, 1000);
-    switchPage('game-screen');
+    interval = setInterval(updateTimer, 1000);
+    switchPage('game-screen')
 }
-restartGameBtn.addEventListener('click', () => restartGame());
 
+const startGameBtn = document.getElementById("start-game-btn");
+startGameBtn.addEventListener('click', () => startGame());
+
+const restartGameBtns = document.querySelectorAll(".restart-game-btn");
+
+restartGameBtns.forEach( btn => {
+    btn.addEventListener('click', () => startGame());
+})
 
 const cards = document.querySelectorAll(".card");
 let hasFlippedCard = false;
-let lockBoard = false; //
+let lockBoard = false; 
 let firstCard, secondCard;
+let totalSeconds = 45;
+let pairsFlipped = 0;
 
-(function shuffleCards() {
+function shuffleCards() {
     cards.forEach((card) => {
 const randomNumber = Math.floor(Math.random() * 16);// mathfloor=rounds up to lowest
  card.style.order = randomNumber
     }) 
-})()
-
-
+}
 
 function flipCard() {
     if (lockBoard || this === firstCard) return;
@@ -61,6 +72,10 @@ function checkForMatch() {
 
     if (isMatch) {
         disableCards();
+        pairsFlipped++;
+        if(pairsFlipped === 8) {
+            switchPage("game-end-win")
+        }
     } else {
         unflipCards();
     }
@@ -96,11 +111,6 @@ cards.forEach((card) => card.addEventListener("click", function() {
 
 const countDown = document.getElementById('timer');
 
-let totalSeconds = 45;
-
-const interval = setInterval(updateTimer,1000);
-
-
 function updateTimer() {
     totalSeconds--;
     const minutes = Math.floor(totalSeconds / 60);
@@ -111,8 +121,7 @@ function updateTimer() {
     countDown.textContent = timeLeft;
 
     if(totalSeconds === 0) {
-        clearInterval(interval);
-        switchPage('game-end')
+        switchPage('game-end-lose')
     }
 }
 
